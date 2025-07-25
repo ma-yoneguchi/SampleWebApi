@@ -6,8 +6,11 @@ using SampleWebApi.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 外部アクセス用のURL設定を追加
-builder.WebHost.UseUrls("http://0.0.0.0:5000", "https://0.0.0.0:5001");
+// 開発環境でのみ外部アクセス用URL設定
+if (builder.Environment.IsDevelopment())
+{
+    builder.WebHost.UseUrls("http://0.0.0.0:5000", "https://0.0.0.0:5001");
+}
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -37,20 +40,39 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
-// CORS設定を追加
+// CORS設定（環境別）
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    if (builder.Environment.IsDevelopment())
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    }
+    else
+    {
+        options.AddPolicy("Production", policy =>
+        {
+            policy.WithOrigins("https://rg-myfirstapi-vs.azurewebsites.net")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    }
 });
 
 // Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Sample Web API",
+        Version = "v1"
+    });
+});
 
 var app = builder.Build();
 
@@ -75,8 +97,15 @@ else
     app.UseSwaggerUI();
 }
 
-// CORS を有効化
-app.UseCors("AllowAll");
+// CORS を有効化（環境別）
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowAll");
+}
+else
+{
+    app.UseCors("Production");
+}
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
