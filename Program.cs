@@ -68,6 +68,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // 本番環境でもSwaggerを有効にする場合（セキュリティ注意）
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // CORS を有効化
 app.UseCors("AllowAll");
