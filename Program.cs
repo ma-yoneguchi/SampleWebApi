@@ -7,10 +7,12 @@ using SampleWebApi.Mapping;
 var builder = WebApplication.CreateBuilder(args);
 
 // 開発環境でのみ外部アクセス用URL設定
+/*
 if (builder.Environment.IsDevelopment())
 {
     builder.WebHost.UseUrls("http://0.0.0.0:5000", "https://0.0.0.0:5001");
 }
+*/
 
 // Add services to the container.
 builder.Services.AddControllers();
