@@ -14,10 +14,13 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+
+		<!-- ダウングレード -->
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<None Update="appsettings.Production.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
