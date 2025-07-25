@@ -6,14 +6,6 @@ using SampleWebApi.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 開発環境でのみ外部アクセス用URL設定
-/*
-if (builder.Environment.IsDevelopment())
-{
-    builder.WebHost.UseUrls("http://0.0.0.0:5000", "https://0.0.0.0:5001");
-}
-*/
-
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -58,7 +50,7 @@ builder.Services.AddCors(options =>
     {
         options.AddPolicy("Production", policy =>
         {
-            policy.WithOrigins("https://rg-myfirstapi-vs.azurewebsites.net")
+            policy.WithOrigins("https://rg-myfirstapi-vs-e6e9f2b8akbrbtav.canadacentral-01.azurewebsites.net")
                   .AllowAnyMethod()
                   .AllowAnyHeader();
         });
@@ -71,12 +63,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// データベースの初期化とサンプルデータの投入
-using (var scope = app.Services.CreateScope())
+// データベースの初期化とサンプルデータの投入（開発環境のみ）
+if (app.Environment.IsDevelopment())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
-    SampleDataSeeder.SeedData(context);
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureCreated();
+        SampleDataSeeder.SeedData(context);
+    }
 }
 
 // Configure the HTTP request pipeline.
